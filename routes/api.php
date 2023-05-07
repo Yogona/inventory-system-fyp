@@ -35,8 +35,8 @@ Route::middleware('auth:sanctum')->group(function(){
         Route::post("create","createUser");
         Route::post("upload", "uploadUsers");
         Route::put("update/{user_id}", "updateUser");
-        Route::delete("delete/{user+id}", "deleteUser");
-        Route::get("get-crs/{records}", "listClassRepresentatives");
+        Route::delete("delete/{user_id}", "deleteUser");
+        Route::get("role/{type}/records/{records}", "index");
     });
 
     //Departments
