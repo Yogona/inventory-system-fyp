@@ -22,13 +22,14 @@ class AuthController extends Controller
         return $this->response->__invoke(true, "Signed in!", $user, 202);
     }
 
-    public function login(Request $request){
-        $userIdentity = $request->user_id;
+    public function login(Request $request)
+    {
+        $username = $request->username;
         $password = $request->password;
 
-        if (Auth::attempt(["user_id" => $userIdentity, "password" => $password,])) {
+        if (Auth::attempt(["user_id" => $username, "password" => $password,])) {
             return $this->handleSession($request);
-        } else if (Auth::attempt(["email" => $userIdentity, "password" => $password,])) {
+        } else if (Auth::attempt(["email" => $username, "password" => $password,])) {
             return $this->handleSession($request);
         }
 

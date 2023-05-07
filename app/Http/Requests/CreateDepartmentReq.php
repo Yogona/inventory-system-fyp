@@ -51,9 +51,9 @@ class CreateDepartmentReq extends FormRequest
     public function rules(): array
     {
         return [
-            "name"          => "required",
+            "name"          => "required|max:50",
             "description"   => "nullable",
-            "abbr"          => "required|min:3|max:5"
+            "abbr"          => "required|min:3|max:5|unique:departments"
         ];
     }
 

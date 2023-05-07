@@ -7,6 +7,7 @@ namespace App\Providers;
 use App\Policies\DepartmentPolicy;
 use App\Policies\InstrumentPolicy;
 use App\Policies\InstrumentsRequestPolicy;
+use App\Policies\RolePolicy;
 use App\Policies\StorePolicy;
 use App\Policies\UserPolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
@@ -28,6 +29,9 @@ class AuthServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        //Roles
+        Gate::define("view-roles", [RolePolicy::class, "viewAny"]);
+        
         //Users
         Gate::define("create-user", [UserPolicy::class, "create"]);
 

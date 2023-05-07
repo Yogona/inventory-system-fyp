@@ -6,6 +6,7 @@ use App\Http\Controllers\InstrumentController;
 use App\Http\Controllers\InstrumentsRequestController;
 use App\Http\Controllers\StoreController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\RoleController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -26,6 +27,8 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::get('/user', function (Request $request) {
         return $request->user();
     });
+
+    Route::get("roles", [RoleController::class, "index"]);
 
     //Users
     Route::controller(UserController::class)->prefix("users")->group(function(){
