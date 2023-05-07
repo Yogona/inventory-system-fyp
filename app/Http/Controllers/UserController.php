@@ -145,8 +145,20 @@ class UserController extends Controller
         );
     }
 
-    public function listClassRepresentatives(Request $request, $records){
-        $users = User::where("role_id", 5)->paginate($records);
+    public function index(Request $request, $type, $records){
+        $user = $request->user();
+
+        if($user->role_id == 1){
+            if($type == "all"){
+                $users = User::paginate($records);
+            }else{
+                $users = User::where("role_id", $type)->paginate($records);
+            } 
+        }else{
+            return $this->response->__invoke(
+                false, "Not authorized to view users.", null, 403
+            );
+        }
 
         $usersNum = $users->count();
         if($usersNum == 0){
