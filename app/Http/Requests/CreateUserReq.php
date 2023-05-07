@@ -53,7 +53,7 @@ class CreateUserReq extends FormRequest
         return [
             "first_name"    => "required",
             "last_name"     => "required",
-            "user_id"       => "required|unique:users",
+            "username"      => "required|unique:users",
             "email"         => "required|email|unique:users",
             "phone"         => "required|digits",
             "gender"        => "regex:^\[M|F]\$",

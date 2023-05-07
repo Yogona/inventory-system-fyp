@@ -20,7 +20,7 @@ class UserSeeder extends Seeder
             "gender"        => "M",
             "phone"         => "0700112233",
             "email"         => "admin@localhost",
-            "user_id"       => "admin",
+            "username"       => "admin",
             "password"      => Hash::make("1234"),
             "role_id"       => 1,
         ]);
