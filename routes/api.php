@@ -27,6 +27,11 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::get('/user', function (Request $request) {
         return $request->user();
     });
+    Route::controller(AuthController::class)->group(function(){
+        
+        Route::post("logout", "logout");
+    });
+    
 
     Route::get("roles", [RoleController::class, "index"]);
 
@@ -37,14 +42,20 @@ Route::middleware('auth:sanctum')->group(function(){
         Route::put("update/{user_id}", "updateUser");
         Route::delete("delete/{user_id}", "deleteUser");
         Route::get("role/{type}/records/{records}", "index");
+        Route::get("role/{type}/search/{query}/records/{records}", "searchIndex");
+        Route::get("role/{type}", "list");
+        Route::patch("change-username/{user_id}", "changeUsername");
+        Route::patch("change-email/{user_id}", "changeEmail");
+        Route::patch("change-phone/{user_id}", "changePhone");
     });
 
     //Departments
     Route::controller(DepartmentController::class)->prefix("departments")->group(function(){
         Route::post("create", "createDepartment");
-        Route::put("update/{depart_id}", "udpate");
+        Route::put("update/{depart_id}", "update");
         Route::delete("delete/{depart_id}", "destroy");
         Route::get("", "index");
+        Route::get("search/{query}", "searchDepartments");
     });
 
     //Stores

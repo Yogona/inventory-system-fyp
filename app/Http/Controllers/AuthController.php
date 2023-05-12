@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
+use Symfony\Component\CssSelector\Node\FunctionNode;
 
 class AuthController extends Controller
 {
@@ -34,5 +36,13 @@ class AuthController extends Controller
         }
 
         return $this->response->__invoke(false, "Incorrect user id or password", null, 401);
+    }
+
+    public function logout(Request $request){
+        $request->session()->flush();
+
+        return $this->response->__invoke(
+            true, "You logged out successfully.", null, 200
+        );
     }
 }

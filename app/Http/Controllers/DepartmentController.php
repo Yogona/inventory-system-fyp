@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CreateDepartmentReq;
+use App\Http\Requests\UpdateDepartmentReq;
 use App\Models\Department;
 use Illuminate\Http\Request;
+use Symfony\Component\CssSelector\Node\FunctionNode;
 
 class DepartmentController extends Controller
 {
@@ -22,8 +24,41 @@ class DepartmentController extends Controller
     {
         $departments = Department::all();
 
+        $departsNum = $departments->count();
+
+        if ($departsNum == 0) {
+            return $this->response->__invoke(
+                false,
+                "No departments were found, please add one.",
+                null,
+                404
+            );
+        };
+
         return $this->response->__invoke(
             true, "Departments were retrieved", $departments, 200
+        );
+    }
+
+    public function searchDepartments(Request $request, $query){
+        if($query == null){
+            $departments = Department::all();
+        }else{
+            $departments = Department::where("name", "LIKE", "%$query%")
+            ->orWhere("abbr", "LIKE", "%$query%")->get();
+        }
+        
+
+        $departsNum = $departments->count();
+
+        if($departsNum == 0){
+            return $this->response->__invoke(
+                false, "No departments were found, improve your search.", null, 404
+            );
+        };
+
+        return $this->response->__invoke(
+            true, "Department".(($departsNum > 1)?"s were":" was")." found.", $departments, 200
         );
     }
 
@@ -50,7 +85,7 @@ class DepartmentController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(CreateDepartmentReq $request, $departId)
+    public function update(UpdateDepartmentReq $request, $departId)
     {
         $department = Department::find($departId);
 

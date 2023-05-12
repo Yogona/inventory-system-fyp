@@ -2,12 +2,12 @@
 
 namespace App\Http\Requests;
 
-use App\Http\Controllers\ResponseController;
-use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
+use App\Http\Controllers\ResponseController;
 use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Contracts\Validation\Validator;
 
-class CreateUserReq extends FormRequest
+class ChangeUsernameReq extends FormRequest
 {
     private $response;
     private $success;
@@ -25,21 +25,25 @@ class CreateUserReq extends FormRequest
      */
     public function authorize(): bool
     {
-        if($this->user()->can("create-user")){
+        if ($this->user()->can("create-user")) {
             return true;
         }
 
         $this->success = false;
-        $this->message = "Not authorized to create users.";
+        $this->message = "Not authorized to update users.";
         $this->data = null;
         $this->code = 403;
-        
+
         return false;
     }
 
-    public function failedAuthorization(){
+    public function failedAuthorization()
+    {
         throw new HttpResponseException($this->response->__invoke(
-            $this->success, $this->message, $this->data, $this->code
+            $this->success,
+            $this->message,
+            $this->data,
+            $this->code
         ));
     }
 
@@ -51,27 +55,22 @@ class CreateUserReq extends FormRequest
     public function rules(): array
     {
         return [
-            "first_name"    => "required",
-            "last_name"     => "required",
-            "username"      => "required|unique:users",
-            "email"         => "required|email|unique:users",
-            "phone"         => "required|min:10|max:13",
-            "gender"        => "regex:/^[M,F]$/",
-            "role_id"       => "required|integer|gt:0|lt:6",
-            "department_id" => "nullable|integer|gt:0",
-            // "password"      => "min:8|max:32",
-            // "confirm_pass"  => "same:password"
+            "username" => "required|unique:users"
         ];
     }
 
-    public function failedValidation(Validator $validator){
+    public function failedValidation(Validator $validator)
+    {
         $this->success = false;
         $this->message = "Check inputs.";
         $this->data = $validator->errors();
         $this->code = 422;
 
         throw new HttpResponseException($this->response->__invoke(
-            $this->success, $this->message, $this->data, $this->code
+            $this->success,
+            $this->message,
+            $this->data,
+            $this->code
         ));
     }
 }

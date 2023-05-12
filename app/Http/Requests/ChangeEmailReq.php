@@ -4,10 +4,10 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use App\Http\Controllers\ResponseController;
-use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Contracts\Validation\Validator;
 
-class CreateDepartmentReq extends FormRequest
+class ChangeEmailReq extends FormRequest
 {
     private $response;
     private $success;
@@ -25,22 +25,16 @@ class CreateDepartmentReq extends FormRequest
      */
     public function authorize(): bool
     {
-        if($this->user()->can("create-department")){
+        if ($this->user()->can("create-user")) {
             return true;
         }
 
         $this->success = false;
-        $this->message = "Not authorized to create departments.";
+        $this->message = "Not authorized to update users.";
         $this->data = null;
         $this->code = 403;
 
         return false;
-    }
-
-    public function failedAuthorization(){
-        throw new HttpResponseException($this->response->__invoke(
-            $this->success, $this->message, $this->data, $this->code 
-        ));
     }
 
     /**
@@ -51,19 +45,22 @@ class CreateDepartmentReq extends FormRequest
     public function rules(): array
     {
         return [
-            "name"          => "required|max:50",
-            "description"   => "nullable",
-            "abbr"          => "required|min:3|max:5|unique:departments"
+            "email" => "required|email|unique:users"
         ];
     }
 
-    public function failedValidation(Validator $validator){
-        $this->message = "Please check inputs.";
+    public function failedValidation(Validator $validator)
+    {
+        $this->success = false;
+        $this->message = "Check inputs.";
         $this->data = $validator->errors();
         $this->code = 422;
 
         throw new HttpResponseException($this->response->__invoke(
-            $this->success, $this->message, $this->data, $this->code
+            $this->success,
+            $this->message,
+            $this->data,
+            $this->code
         ));
     }
 }
