@@ -4,10 +4,10 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use App\Http\Controllers\ResponseController;
-use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Contracts\Validation\Validator;
 
-class CreateStoreReq extends FormRequest
+class ChangeUsernameReq extends FormRequest
 {
     private $response;
     private $success;
@@ -18,8 +18,6 @@ class CreateStoreReq extends FormRequest
     public function __construct()
     {
         $this->response = new ResponseController();
-        $this->success = false;
-        $this->data = null;
     }
 
     /**
@@ -27,14 +25,25 @@ class CreateStoreReq extends FormRequest
      */
     public function authorize(): bool
     {
-        return $this->user()->can("create-store");
+        if ($this->user()->can("create-user")) {
+            return true;
+        }
+
+        $this->success = false;
+        $this->message = "Not authorized to update users.";
+        $this->data = null;
+        $this->code = 403;
+
+        return false;
     }
 
-    public function failedAuthorization(){
-        $this->message = "Not authorized to create stores.";
-        $this->code = 403;
+    public function failedAuthorization()
+    {
         throw new HttpResponseException($this->response->__invoke(
-            $this->success, $this->message, $this->data, $this->code
+            $this->success,
+            $this->message,
+            $this->data,
+            $this->code
         ));
     }
 
@@ -46,21 +55,22 @@ class CreateStoreReq extends FormRequest
     public function rules(): array
     {
         return [
-            "name"          => "required",
-            "description"   => "nullable",
-            "location"      => "required",
-            "store_keeper"  => "required|integer|gt:0|unique:stores",
-            "department_id" => "required|integer|gt:0"
+            "username" => "required|unique:users"
         ];
     }
 
-    public function failedValidation(Validator $validator){
-        $this->message = "Please check inputs.";
+    public function failedValidation(Validator $validator)
+    {
+        $this->success = false;
+        $this->message = "Check inputs.";
         $this->data = $validator->errors();
         $this->code = 422;
 
         throw new HttpResponseException($this->response->__invoke(
-            $this->success, $this->message, $this->data, $this->code
+            $this->success,
+            $this->message,
+            $this->data,
+            $this->code
         ));
     }
 }

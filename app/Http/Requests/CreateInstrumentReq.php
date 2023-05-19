@@ -5,6 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use App\Http\Controllers\ResponseController;
 use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Contracts\Validation\Validator;
 
 class CreateInstrumentReq extends FormRequest
 {
@@ -26,7 +27,7 @@ class CreateInstrumentReq extends FormRequest
      */
     public function authorize(): bool
     {
-        return $this->user()->can("create-instrument");
+        return $this->user()->can("create-instrument", $this->store_id);
     }
 
     public function failedAuthorization(){
@@ -47,9 +48,20 @@ class CreateInstrumentReq extends FormRequest
     {
         return [
             "name"          => "required",
-            "description"   => "nullable",
+            "description"   => "required",
             "quantity"      => "required|integer|gte:0",
-            "code"          => "required|unique:instruments"
+            "code"          => "required|unique:instruments",
+            "store_id"      => "required|integer|gt:0"
         ];
+    }
+
+    public function failedValidation(Validator $validator){
+        $this->message = "Please check input(s).";
+        $this->data = $validator->errors();
+        $this->code = 422;
+
+        throw new HttpResponseException($this->response->__invoke(
+            false, $this->message, $this->data, $this->code
+        ));
     }
 }

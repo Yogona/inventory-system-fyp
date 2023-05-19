@@ -4,10 +4,10 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use App\Http\Controllers\ResponseController;
-use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Contracts\Validation\Validator;
 
-class CreateStoreReq extends FormRequest
+class UpdateStoreReq extends FormRequest
 {
     private $response;
     private $success;
@@ -30,11 +30,15 @@ class CreateStoreReq extends FormRequest
         return $this->user()->can("create-store");
     }
 
-    public function failedAuthorization(){
-        $this->message = "Not authorized to create stores.";
+    public function failedAuthorization()
+    {
+        $this->message = "Not authorized to update stores.";
         $this->code = 403;
         throw new HttpResponseException($this->response->__invoke(
-            $this->success, $this->message, $this->data, $this->code
+            $this->success,
+            $this->message,
+            $this->data,
+            $this->code
         ));
     }
 
@@ -49,18 +53,22 @@ class CreateStoreReq extends FormRequest
             "name"          => "required",
             "description"   => "nullable",
             "location"      => "required",
-            "store_keeper"  => "required|integer|gt:0|unique:stores",
+            // "store_keeper"  => "required|integer|gt:0|unique:stores",
             "department_id" => "required|integer|gt:0"
         ];
     }
 
-    public function failedValidation(Validator $validator){
+    public function failedValidation(Validator $validator)
+    {
         $this->message = "Please check inputs.";
         $this->data = $validator->errors();
         $this->code = 422;
 
         throw new HttpResponseException($this->response->__invoke(
-            $this->success, $this->message, $this->data, $this->code
+            $this->success,
+            $this->message,
+            $this->data,
+            $this->code
         ));
     }
 }

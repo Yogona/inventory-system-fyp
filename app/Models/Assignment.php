@@ -5,9 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Instrument extends Model
+class Assignment extends Model
 {
     use HasFactory;
 
-    protected $guarded = ["added_by"];
+    protected $fillable = [
+        "title", "file_path"
+    ];
 }

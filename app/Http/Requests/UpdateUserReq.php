@@ -4,10 +4,10 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use App\Http\Controllers\ResponseController;
-use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Contracts\Validation\Validator;
 
-class InstrumentsReq extends FormRequest
+class UpdateUserReq extends FormRequest
 {
     private $response;
     private $success;
@@ -18,8 +18,6 @@ class InstrumentsReq extends FormRequest
     public function __construct()
     {
         $this->response = new ResponseController();
-        $this->success = false;
-        $this->data = null;
     }
 
     /**
@@ -27,15 +25,25 @@ class InstrumentsReq extends FormRequest
      */
     public function authorize(): bool
     {
-        return $this->user()->can("request-instruments");
-    }
+        if ($this->user()->can("create-user")) {
+            return true;
+        }
 
-    public function failedAuthorization(){
-        $this->message = "Not authorized to request for instruments.";
+        $this->success = false;
+        $this->message = "Not authorized to update users.";
+        $this->data = null;
         $this->code = 403;
 
+        return false;
+    }
+
+    public function failedAuthorization()
+    {
         throw new HttpResponseException($this->response->__invoke(
-            $this->success, $this->message, $this->data, $this->code
+            $this->success,
+            $this->message,
+            $this->data,
+            $this->code
         ));
     }
 
@@ -47,20 +55,26 @@ class InstrumentsReq extends FormRequest
     public function rules(): array
     {
         return [
-            "instrument_id" => "required",
-            "quantity"      => "required|gt:0",
-            "allocatee"     => "required",
-            "days"          => "required|gt:0",
+            "first_name"    => "required",
+            "last_name"     => "required",
+            "gender"        => "regex:/^[M,F]$/",
+            "role_id"       => "required|integer|gt:0|lt:6",
+            "department_id" => "nullable|integer|gt:0",
         ];
     }
 
-    public function failedValidation(Validator $validator){
-        $this->message = "Please check inputs.";
+    public function failedValidation(Validator $validator)
+    {
+        $this->success = false;
+        $this->message = "Check inputs.";
         $this->data = $validator->errors();
         $this->code = 422;
 
         throw new HttpResponseException($this->response->__invoke(
-            $this->success, $this->message, $this->data, $this->code
+            $this->success,
+            $this->message,
+            $this->data,
+            $this->code
         ));
     }
 }

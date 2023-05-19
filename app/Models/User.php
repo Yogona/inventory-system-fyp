@@ -44,4 +44,12 @@ class User extends Authenticatable
     public function storeRequests(){
         return $this->hasManyThrough(InstrumentsRequest::class, Store::class, "store_keeper", "store_id");
     }
+
+    public function store(){
+        return $this->hasOne(Instrument::class, "added_by");
+    }
+
+    public function myRequests(){
+        return $this->hasMany(InstrumentsRequest::class, "requester");
+    }
 }

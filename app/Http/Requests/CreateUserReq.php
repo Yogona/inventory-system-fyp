@@ -55,12 +55,12 @@ class CreateUserReq extends FormRequest
             "last_name"     => "required",
             "username"      => "required|unique:users",
             "email"         => "required|email|unique:users",
-            "phone"         => "required|digits",
-            "gender"        => "regex:\^[M|F]$\\",
+            "phone"         => "required|min:10|max:13",
+            "gender"        => "regex:/^[M,F]$/",
             "role_id"       => "required|integer|gt:0|lt:6",
             "department_id" => "nullable|integer|gt:0",
-            "password"      => "min:8|max:32",
-            "confirm_pass"  => "same:password"
+            // "password"      => "min:8|max:32",
+            // "confirm_pass"  => "same:password"
         ];
     }
 

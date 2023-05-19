@@ -58,6 +58,10 @@ class CreateDepartmentReq extends FormRequest
     }
 
     public function failedValidation(Validator $validator){
+        $this->message = "Please check inputs.";
+        $this->data = $validator->errors();
+        $this->code = 422;
+
         throw new HttpResponseException($this->response->__invoke(
             $this->success, $this->message, $this->data, $this->code
         ));
