@@ -13,7 +13,7 @@ class DepartmentSeeder extends Seeder
      */
     public function run(): void
     {
-        Department::create([
+        Department::create([//1
             "name"          => "Computer Science and Engineering",
             "description"   => "Provides computer labs.",
             "abbr"          => "CSE",

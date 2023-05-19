@@ -14,7 +14,7 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
-        User::create([
+        User::create([//1
             "first_name"    => "System",
             "last_name"     => "Admin",
             "gender"        => "M",
@@ -25,7 +25,7 @@ class UserSeeder extends Seeder
             "role_id"       => 1,
         ]);
 
-        User::create([
+        User::create([//2
             "first_name"    => "John",
             "last_name"     => "Doe",
             "gender"        => "M",
@@ -36,7 +36,7 @@ class UserSeeder extends Seeder
             "role_id"       => 2,
         ]);
 
-        User::create([
+        User::create([//3
             "first_name"    => "Jane",
             "last_name"     => "Doe",
             "gender"        => "F",

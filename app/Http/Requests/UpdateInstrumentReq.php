@@ -3,11 +3,11 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Exceptions\HttpResponseException;
 use App\Http\Controllers\ResponseController;
 use Illuminate\Contracts\Validation\Validator;
-use Illuminate\Http\Exceptions\HttpResponseException;
 
-class InstrumentsReq extends FormRequest
+class UpdateInstrumentReq extends FormRequest
 {
     private $response;
     private $success;
@@ -27,15 +27,19 @@ class InstrumentsReq extends FormRequest
      */
     public function authorize(): bool
     {
-        return $this->user()->can("request-instruments");
+        return $this->user()->can("create-instrument", $this->instrument_id);
     }
 
-    public function failedAuthorization(){
-        $this->message = "Not authorized to request for instruments.";
+    public function failedAuthorization()
+    {
+        $this->message = "Not authorized to create instrument.";
         $this->code = 403;
 
         throw new HttpResponseException($this->response->__invoke(
-            $this->success, $this->message, $this->data, $this->code
+            $this->success,
+            $this->message,
+            $this->data,
+            $this->code
         ));
     }
 
@@ -47,20 +51,22 @@ class InstrumentsReq extends FormRequest
     public function rules(): array
     {
         return [
-            "instrument_id" => "required",
-            "quantity"      => "required|gt:0",
-            "allocatee"     => "required",
-            "days"          => "required|gt:0",
+            "name"          => "required",
+            "description"   => "required",
         ];
     }
 
-    public function failedValidation(Validator $validator){
-        $this->message = "Please check inputs.";
+    public function failedValidation(Validator $validator)
+    {
+        $this->message = "Please check input(s).";
         $this->data = $validator->errors();
         $this->code = 422;
 
         throw new HttpResponseException($this->response->__invoke(
-            $this->success, $this->message, $this->data, $this->code
+            false,
+            $this->message,
+            $this->data,
+            $this->code
         ));
     }
 }

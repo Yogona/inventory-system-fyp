@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CreateInstrumentReq;
+use App\Http\Requests\UpdateInstrumentReq;
 use App\Models\Instrument;
 use Illuminate\Http\Request;
 
@@ -18,14 +19,106 @@ class InstrumentController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request)
+    public function index(Request $request, $storeId, $records)
     {
-        $user = $request->user();
+        $instruments = Instrument::where("store_id", $storeId)->orderBy("name", "ASC")
+        ->paginate($records);
 
-        $instruments = Instrument::all();
+        $instrumentsNum = $instruments->count();
+
+        if($instrumentsNum == 0){
+            return $this->response->__invoke(
+                false,
+                "No instruments were found, please add one.",
+                null,
+                404
+            );
+        }
 
         return $this->response->__invoke(
-            true, "Instruments were retrieved.", $instruments, 200
+            true,
+            "Instrument" . ($instrumentsNum == 1 ? " was" : "s were") . " retrieved successfully.", $instruments, 200
+        );
+    }
+
+    /**
+     * Display a listing of the resource.
+     */
+    public function searchIndex($storeId, $query, $records)
+    {
+        $instruments = Instrument::where("store_id", $storeId)
+        ->where(function($clause) use ($query){
+            $clause->where("name", "LIKE", "%$query%")->orWhere("code", "LIKE", "%$query%");
+        })->orderBy("name", "ASC")->paginate($records);
+
+        $instrumentsNum = $instruments->count();
+
+        if (!$instrumentsNum) {
+            return $this->response->__invoke(
+                false,
+                "No instruments were found by that search query, improve your search.",
+                null,
+                404
+            );
+        }
+
+        return $this->response->__invoke(
+            true,
+            "Instrument" . ($instrumentsNum == 1 ? " was" : "s were") . " retrieved successfully.",
+            $instruments,
+            200
+        );
+    }
+
+    /**
+     * Display a listing of the resource.
+     */
+    public function list(Request $request, $storeId)
+    {
+        $instruments = Instrument::where("store_id", $storeId)->orderBy("name", "ASC")->get();
+
+        $instrumentsNum = $instruments->count();
+
+        if($instrumentsNum == 0){
+            return $this->response->__invoke(
+                false, "No instruments were found, please add one.", null, 404
+            );
+        }
+
+        return $this->response->__invoke(
+            true,
+            "Instrument".($instrumentsNum == 1?" was":"s were")." retrieved successfully.",
+            $instruments,
+            200
+        );
+    }
+
+    /**
+     * Display a listing of the resource.
+     */
+    public function searchList($storeId, $query)
+    {
+        $instruments = Instrument::where("store_id", $storeId)
+        ->where(function($clause)use($query){
+            $clause->where("name", "LIKE", "%$query%")->orWhere("code", "LIKE", "%$query%");
+        })->orderBy("name", "ASC")->get();
+
+        $instrumentsNum = $instruments->count();
+
+        if ($instrumentsNum == 0) {
+            return $this->response->__invoke(
+                false,
+                "No instruments were found, please add one.",
+                null,
+                404
+            );
+        }
+
+        return $this->response->__invoke(
+            true,
+            "Instrument" . ($instrumentsNum == 1 ? " was" : "s were") . " retrieved successfully.",
+            $instruments,
+            200
         );
     }
 
@@ -34,7 +127,7 @@ class InstrumentController extends Controller
      */
     public function store(CreateInstrumentReq $request)
     {
-        $instrument = Instrument::create($request->all());
+        $instrument = $request->user()->store()->create($request->all());
 
         return $this->response->__invoke(
             true, "Instrument was added to the store successfully.", $instrument, 201
@@ -52,7 +145,7 @@ class InstrumentController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(CreateInstrumentReq $request, $instrumentId)
+    public function update(UpdateInstrumentReq $request, $instrumentId)
     {
         $instrument = Instrument::find($instrumentId);
 
@@ -74,7 +167,7 @@ class InstrumentController extends Controller
      */
     public function destroy(Request $request, $instrumentId)
     {
-        if($request->user()->cannot("create-instrument")){
+        if($request->user()->cannot("create-instrument", $instrumentId)){
             return $this->response->__invoke(
                 false, "Not authorized to delete instruments.", null, 403
             );

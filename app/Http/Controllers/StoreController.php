@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CreateStoreReq;
+use App\Http\Requests\UpdateStoreReq;
 use App\Models\Store;
 use Illuminate\Http\Request;
 
@@ -34,6 +35,53 @@ class StoreController extends Controller
         );
     }
 
+    public function list(){
+        $stores = Store::all();
+
+        $storesNum = $stores->count();
+        if ($storesNum == 0) {
+            return $this->response->__invoke(
+                false,
+                "No stores were found.",
+                null,
+                404
+            );
+        }
+
+        return $this->response->__invoke(
+            true,
+            "Store" . (($storesNum > 1) ? "s were" : " was") . " retrieved.",
+            $stores,
+            200
+        );
+    }
+
+    /**
+     * 
+     */
+    public function searchList($query)
+    {
+        $stores = Store::where("name", "LIKE", "%$query%")
+        ->orWhere("location", "LIKE", "%$query%")->get();
+        
+        $storesNum = $stores->count();
+        if ($storesNum == 0) {
+            return $this->response->__invoke(
+                false,
+                "No stores were found.",
+                null,
+                404
+            );
+        }
+
+        return $this->response->__invoke(
+            true,
+            "Store" . (($storesNum > 1) ? "s were" : " was") . " retrieved.",
+            $stores,
+            200
+        );
+    }
+
     /**
      * Store a newly created resource in storage.
      */
@@ -57,7 +105,7 @@ class StoreController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(CreateStoreReq $request, $storeId)
+    public function update(UpdateStoreReq $request, $storeId)
     {
         $store = Store::find($storeId);
 

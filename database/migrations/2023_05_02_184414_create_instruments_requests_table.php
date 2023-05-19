@@ -17,22 +17,24 @@ return new class extends Migration
             $table->unsignedBigInteger("instrument_id");
             $table->unsignedInteger("quantity");
             $table->unsignedBigInteger("allocatee");
-            $table->unsignedBigInteger("status_id");
+            $table->unsignedBigInteger("status_id")->default(1);
             $table->unsignedBigInteger("store_id");
+            $table->unsignedBigInteger("assignment_id");
             $table->unsignedInteger("days");
-            $table->date("deadline");
+            $table->dateTime("deadline");
             $table->timestamps();
+            $table->softDeletes();
 
             $table->foreign("requester")->references("id")->on("users")->onDelete("cascade")
             ->onUpdate("restrict");
-            $table->foreign("instrument_id")->references("id")->on("instruments")
-            ->onDelete("cascade")->onUpdate("restrict");
-            $table->foreign("allocatee")->references("id")->on("users")->onDelete("cascade")
-            ->onUpdate("restrict");
-            $table->foreign("status_id")->references("id")->on("statuses")->onDelete("restrict")
-            ->onUpdate("restrict");
-            $table->foreign("store_id")->references("id")->on("stores")->onDelete("cascade")
-            ->onUpdate("restrict");
+            // $table->foreign("instrument_id")->references("id")->on("instruments")
+            // ->onDelete("cascade")->onUpdate("restrict");
+            // $table->foreign("allocatee")->references("id")->on("users")->onDelete("cascade")
+            // ->onUpdate("restrict");
+            // $table->foreign("status_id")->references("id")->on("statuses")->onDelete("restrict")
+            // ->onUpdate("restrict");
+            // $table->foreign("store_id")->references("id")->on("stores")->onDelete("cascade")
+            // ->onUpdate("restrict");
         });
     }
 

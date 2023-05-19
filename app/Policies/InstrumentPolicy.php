@@ -27,10 +27,14 @@ class InstrumentPolicy
     /**
      * Determine whether the user can create models.
      */
-    public function create(User $user): bool
+    public function create(User $user, $storeId): bool
     {
-        if($user->role_id == 1 || $user->role_id == 3){
+        if($user->role_id == 1){
             return true;
+        }else if($user->role_id == 3){
+            if($user->store()->first()->id == $storeId){
+                return true;
+            }
         }
 
         return false;
