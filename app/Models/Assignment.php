@@ -10,6 +10,6 @@ class Assignment extends Model
     use HasFactory;
 
     protected $fillable = [
-        "title", "file_path"
+        "title", "file_path", "creator", "assignee", "store_id"
     ];
 }

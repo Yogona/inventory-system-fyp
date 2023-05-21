@@ -15,6 +15,9 @@ return new class extends Migration
             $table->id();
             $table->string("title");
             $table->string("file_path");
+            $table->unsignedBigInteger("creator");
+            $table->unsignedBigInteger("assignee");
+            $table->unsignedBigInteger("store_id");
             $table->timestamps();
         });
     }

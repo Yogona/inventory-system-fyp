@@ -28,11 +28,9 @@ Route::middleware('auth:sanctum')->group(function(){
         return $request->user();
     });
     Route::controller(AuthController::class)->group(function(){
-        
         Route::post("logout", "logout");
     });
     
-
     Route::get("roles", [RoleController::class, "index"]);
 
     //Users
@@ -80,12 +78,19 @@ Route::middleware('auth:sanctum')->group(function(){
     });
 
     //Instruments requests
-    Route::controller(InstrumentsRequestController::class)->prefix("requests")->group(function(){
-        Route::post("place", "store");
-        Route::get("records/{records}", "index");
-        Route::put("update/{request_id}", "update");
-        Route::patch("allocate/{request_id}", "allocate");
-        Route::patch("deallocate/{request_id}", "deallocate");
-        Route::delete("delete/{request_id}", "destroy");
+    Route::controller(InstrumentsRequestController::class)->group(function(){
+        Route::prefix("requests")->group(function(){
+            Route::post("place", "store");
+            Route::get("records/{records}", "index");
+            Route::put("update/{request_id}", "update");
+            Route::patch("allocate/{request_id}", "allocate");
+            Route::patch("deallocate/{request_id}", "deallocate");
+            Route::delete("delete/{request_id}", "destroy");
+
+        });
+
+        Route::get("assignments/store/{store_id}/records/{records}", "getAssignments");
+        Route::get("download/assignments/{file}", "downloadAttachment");
+        
     });
 });

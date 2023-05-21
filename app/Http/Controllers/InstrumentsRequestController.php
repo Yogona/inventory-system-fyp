@@ -12,7 +12,7 @@ use App\Models\Assignment;
 use App\Models\Instrument;
 use App\Models\User;
 use App\Models\Status;
-use Carbon\Carbon;
+use App\Models\Store;
 
 class InstrumentsRequestController extends Controller
 {
@@ -50,7 +50,7 @@ class InstrumentsRequestController extends Controller
         if($requestsNum == 0){
             return $this->response->__invoke(
                 false,
-                "No instruments requests",
+                "No instruments requests.",
                 null,
                 404
             );
@@ -87,6 +87,7 @@ class InstrumentsRequestController extends Controller
         $deadline = now()->addDays($request->days);
         $assignmentFile = $request->file("attachment");
         $path = $assignmentFile->store("assignments");
+        $ext = $assignmentFile->getClientOriginalExtension();
 
         if($path == false){
             return $this->response->__invoke(
@@ -96,7 +97,10 @@ class InstrumentsRequestController extends Controller
 
         $assignment = Assignment::create([
             "title"     => $request->title,
-            "file_path" => $path
+            "file_path" => $path,
+            "creator"   => $request->user()->id,
+            "assignee"  => $request->allocatee,
+            "store_id"  => $request->store_id
         ]);
 
         $index = 0;
@@ -230,7 +234,49 @@ class InstrumentsRequestController extends Controller
         $request->delete();
     }
 
-    public function getAssignments(){
-        
+    public function getAssignments(Request $request, $storeId, $records){
+        $user = $request->user();
+        $reqs = Assignment::where("store_id", $storeId);
+
+        if($user->role_id == 1 || $user->role_id == 2 || $user->role_id == 3){
+            $reqs = $reqs->paginate($records);
+        } else if($user->role_id == 4){
+            $reqs = $reqs->where("creator", $user->id)->paginate($records);
+        } else if($user->role_id == 5){
+            $reqs = $reqs->where("assignee", $user->id)->paginate($records);
+        }
+
+        $reqsNum = $reqs->count();
+        if($reqsNum == 0){
+            return $this->response->__invoke(
+                false, "No assignments present.", null, 404
+            );
+        }
+
+        foreach($reqs as $req){
+            $creator = User::find($req->creator);
+            $req->creator = $creator;
+
+            $assignee = User::find($req->assignee);
+            $req->assignee = $assignee;
+        }
+
+        return $this->response->__invoke(
+            true, "Assignment".($reqsNum > 1?"s were":" was")." retrieved.", $reqs, 200
+        );
+    }
+
+    public function downloadAttachment(Request $request, $fileName){
+        $filePath = "assignments/$fileName";
+        $assignment = Assignment::where("file_path", $filePath)->first();
+        $filePath = storage_path("app/$filePath");
+
+        $ext = explode(".", $filePath)[1];
+
+        return response()->download(
+            $filePath, 
+            "$assignment->title.$ext", 
+            ["Content-Type"=>"application/$ext"], 
+        );
     }
 }

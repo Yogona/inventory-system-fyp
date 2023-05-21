@@ -14,6 +14,8 @@ return new class extends Migration
         Schema::create('extension_requests', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger("request_id");
+            $table->unsignedBigInteger("store_id");
+            $table->unsignedBigInteger("requester");
             $table->unsignedInteger("extra_days");
             $table->timestamps();
 
