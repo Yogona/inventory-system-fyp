@@ -81,12 +81,15 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::controller(InstrumentsRequestController::class)->group(function(){
         Route::prefix("requests")->group(function(){
             Route::post("place", "store");
+            Route::post("extend", "requestExtension");
+            Route::get("extensions/store/{store_id}/records/{records}", "getExtensions");
             Route::get("records/{records}", "index");
             Route::put("update/{request_id}", "update");
             Route::patch("allocate/{request_id}", "allocate");
             Route::patch("deallocate/{request_id}", "deallocate");
+            Route::patch("approve-extension/{ext_id}", "approveExtension");
             Route::delete("delete/{request_id}", "destroy");
-
+            Route::delete("delete-extension/{ext_id}", "deleteExt");
         });
 
         Route::get("assignments/store/{store_id}/records/{records}", "getAssignments");

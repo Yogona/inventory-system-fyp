@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CreateRequestsReq;
+use App\Http\Requests\ExtensionReq;
+use App\Models\ExtensionRequest;
 use App\Models\InstrumentsRequest;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
@@ -74,7 +76,7 @@ class InstrumentsRequestController extends Controller
 
         return $this->response->__invoke(
             true, 
-            "Instruments request".($requestsNum > 1)?"s were":" was"."retrieved successfully.", 
+            "Instruments request".(($requestsNum > 1)?"s were":" was")." retrieved successfully.", 
             $requests, 200
         );
     }
@@ -239,11 +241,11 @@ class InstrumentsRequestController extends Controller
         $reqs = Assignment::where("store_id", $storeId);
 
         if($user->role_id == 1 || $user->role_id == 2 || $user->role_id == 3){
-            $reqs = $reqs->paginate($records);
+            $reqs = $reqs;
         } else if($user->role_id == 4){
-            $reqs = $reqs->where("creator", $user->id)->paginate($records);
+            $reqs = $reqs->where("creator", $user->id);
         } else if($user->role_id == 5){
-            $reqs = $reqs->where("assignee", $user->id)->paginate($records);
+            $reqs = $reqs->where("assignee", $user->id);
         }
 
         $reqsNum = $reqs->count();
@@ -252,6 +254,8 @@ class InstrumentsRequestController extends Controller
                 false, "No assignments present.", null, 404
             );
         }
+
+        $reqs = $reqs->orderBy("created_at", "DESC")->paginate($records);
 
         foreach($reqs as $req){
             $creator = User::find($req->creator);
@@ -277,6 +281,102 @@ class InstrumentsRequestController extends Controller
             $filePath, 
             "$assignment->title.$ext", 
             ["Content-Type"=>"application/$ext"], 
+        );
+    }
+
+    public function requestExtension(ExtensionReq $request){
+        // $requests = $request->assignment->instrumentsRequest()->first();
+
+        $extension = ExtensionRequest::create([
+            "assignment"    => $request->assignment->id,
+            "store_id"      => $request->store_id,
+            "requester"     => $request->user()->id,
+            "extra_days"    => $request->days
+        ]);
+
+        return $this->response->__invoke(
+            true, "Extension request was placed.", $extension, 201
+        );
+    }
+
+    public function getExtensions(Request $request, $storeId, $records){
+        $extensions = ExtensionRequest::where("store_id", $storeId);
+        $user = $request->user();
+
+        if($user->role_id == 1 || $user->role_id == 2 || $user->role_id == 3){
+            $extensions = $extensions->orderBy("created_at", "DESC")->orderBy("title", "ASC")
+            ->paginate($records);
+        }
+        else if($user->role_id == 4){
+            $extensions = $extensions->where("requestor", $user->id)->orderBy("created_at", "DESC")
+            ->orderBy("title", "ASC")->paginate($records);
+        }else{
+            $extensions = array();
+        }
+
+        $extNum = $extensions->count();
+        if($extNum == 0){
+            return $this->response->__invoke(
+                false, "No extensions were found in this store.", null, 404
+            );
+        } 
+
+        foreach($extensions as $extension){
+            $assignment = $extension->assignment()->first();
+            $extension->assignment = $assignment;
+
+            $extension->requester = $extension->requester()->first();
+        }
+
+        return $this->response->__invoke(
+            true, 
+            "Extension request".($extNum > 1)?"s were":" was"." retrieved successfully.", 
+            $extensions, 
+            200
+        );
+    }
+
+    public function approveExtension(Request $request, $extId){
+        $user = $request->user();
+
+        if($user->role_id == 4 || $user->role_id == 5){
+            return $this->response->__invoke(
+                false, "Not authorized to approve extra days extensions for instruments.", null, 403
+            );
+        }
+
+        $ext = ExtensionRequest::find($extId);
+        $extraDays = $ext->extra_days;
+
+        $assignment = $ext->assignment()->first();
+
+        foreach($assignment->instrumentsRequests()->get() as $req){
+            $req->days += $extraDays;
+            $req->deadline->addDays($extraDays);
+            $req->save();
+        }
+
+        $ext->delete();
+
+        return $this->response->__invoke(
+            true, "Extra days were granted.", null, 200
+        );
+    }
+
+    public function deleteExt(Request $request, $extId){
+        $user = $request->user();
+        
+        if($user->role_id == 5){
+            return $this->response->__invoke(
+                false, "Not authorized to delete requests.", null, 403
+            );
+        }
+
+        $ext = ExtensionRequest::find($extId);
+        $ext->delete();
+
+        return $this->response->__invoke(
+            true, "Instruments days extension request was deleted successfully.", null, 200
         );
     }
 }
