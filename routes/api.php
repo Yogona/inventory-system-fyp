@@ -31,7 +31,11 @@ Route::middleware('auth:sanctum')->group(function(){
         Route::post("logout", "logout");
     });
     
-    Route::get("roles", [RoleController::class, "index"]);
+    Route::controller(RoleController::class)->prefix("roles")->group(function(){
+        Route::get("", "index");
+        Route::get("/{roleId}", "role");
+    });
+    
 
     //Users
     Route::controller(UserController::class)->prefix("users")->group(function(){

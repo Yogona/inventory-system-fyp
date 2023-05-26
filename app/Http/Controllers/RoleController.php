@@ -30,4 +30,12 @@ class RoleController extends Controller
             true, "Role(s) was/were retrieved successfully.", $roles, 200
         );
     }
+
+    public function role($roleId){
+        $role = Role::find($roleId);
+
+        return $this->response->__invoke(
+            true, "Role data were retrieved successfully.", $role, 200
+        );
+    }
 }
