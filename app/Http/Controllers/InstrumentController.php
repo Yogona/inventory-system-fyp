@@ -127,7 +127,14 @@ class InstrumentController extends Controller
      */
     public function store(CreateInstrumentReq $request)
     {
-        $instrument = $request->user()->store()->create($request->all());
+        $instrument = Instrument::create([
+            'name' => $request->name,
+            'description' => $request->description,
+            'quantity' => $request->quantity,
+            'code' => $request->code,
+            'added_by' => $request->user()->id,
+            'store_id' => $request->store_id
+        ]);
 
         return $this->response->__invoke(
             true, "Instrument was added to the store successfully.", $instrument, 201

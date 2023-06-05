@@ -9,5 +9,5 @@ class Instrument extends Model
 {
     use HasFactory;
 
-    protected $guarded = ["added_by"];
+    protected $guarded = ["id"];
 }

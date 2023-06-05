@@ -46,7 +46,7 @@ class User extends Authenticatable
     }
 
     public function store(){
-        return $this->hasOne(Instrument::class, "added_by");
+        return $this->hasOne(Store::class, "store_keeper");
     }
 
     public function myRequests(){
