@@ -21,6 +21,15 @@ class InstrumentsRequest extends Model
         "assignment_id"
     ];
 
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array<string, string>
+     */
+    protected $casts = [
+        'deadline' => 'datetime',
+    ];
+
     public function instrument(){
         return $this->belongsTo(Instrument::class);
     }

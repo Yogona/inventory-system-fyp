@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\CreateInstrumentReq;
 use App\Http\Requests\UpdateInstrumentReq;
 use App\Models\Instrument;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class InstrumentController extends Controller
@@ -33,6 +34,10 @@ class InstrumentController extends Controller
                 null,
                 404
             );
+        }
+
+        foreach($instruments as $instrument){
+            $instrument->added_by = User::find($instrument->added_by);
         }
 
         return $this->response->__invoke(

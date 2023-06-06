@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DepartmentController;
+use App\Http\Controllers\ExtensionRequestController;
 use App\Http\Controllers\InstrumentController;
 use App\Http\Controllers\InstrumentsRequestController;
 use App\Http\Controllers\StoreController;
@@ -85,19 +86,25 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::controller(InstrumentsRequestController::class)->group(function(){
         Route::prefix("requests")->group(function(){
             Route::post("place", "store");
-            Route::post("extend", "requestExtension");
-            Route::get("extensions/store/{store_id}/records/{records}", "getExtensions");
+            
+            
             Route::get("records/{records}", "index");
             Route::put("update/{request_id}", "update");
             Route::patch("allocate/{request_id}", "allocate");
             Route::patch("deallocate/{request_id}", "deallocate");
-            Route::patch("approve-extension/{ext_id}", "approveExtension");
             Route::delete("delete/{request_id}", "destroy");
-            Route::delete("delete-extension/{ext_id}", "deleteExt");
         });
 
         Route::get("assignments/store/{store_id}/records/{records}", "getAssignments");
         Route::get("download/assignments/{file}", "downloadAttachment");
         
+    });
+
+    //Instruments time extension
+    Route::controller(ExtensionRequestController::class)->prefix('extensions')->group(function(){
+        Route::post("", "requestExtension");
+        Route::get("store/{store_id}/records/{records}", "index");
+        Route::patch("approve/{ext_id}", "approve");
+        Route::delete("{ext_id}", "destroy");
     });
 });
