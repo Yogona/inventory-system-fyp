@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use App\Models\Assignment;
+use App\Models\ImparedInstrument;
 use App\Models\Instrument;
 use App\Models\User;
 use App\Models\Status;
@@ -281,6 +282,42 @@ class InstrumentsRequestController extends Controller
             $filePath, 
             "$assignment->title.$ext", 
             ["Content-Type"=>"application/$ext"], 
+        );
+    }
+
+    public function markImpared(Request $request, $instrumentsReqId){
+        $instrumentsRequest = InstrumentsRequest::find($instrumentsReqId);
+        $numOfImpared = $request->number_of_impared;
+
+        if($numOfImpared > $instrumentsRequest->quantity){
+            return $this->response->__invoke(
+                false, "Instruments number for marking impared exceeds actual allocated number.",
+                [], 400
+            );
+        }
+
+        $instrumentsRequest->quantity -= $numOfImpared;
+        $instrumentsRequest->save();
+
+        if($instrumentsRequest->quantity == 0){
+            $instrumentsRequest->delete();
+        }
+
+        ImparedInstrument::updateOrCreate(
+            ["instrument_id" => $instrumentsRequest->instrument_id,], [
+            "instrument_id" => $instrumentsRequest->instrument_id,
+            "fault"         => $request->fault,
+            "description"   => $request->description,
+            "quantity"      => $numOfImpared,
+            "responsible_user" => $instrumentsRequest->allocatee,
+            "store"         => $instrumentsRequest->store_id
+        ]);
+
+        return $this->response->__invoke(
+            true,
+            "$numOfImpared instruments marked as impared.",
+            [],
+            201
         );
     }
 }
