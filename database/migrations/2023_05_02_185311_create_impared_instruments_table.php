@@ -16,15 +16,14 @@ return new class extends Migration
             $table->unsignedBigInteger("instrument_id");
             $table->string("fault");
             $table->text("description");
+            $table->unsignedInteger("quantity");
             $table->unsignedBigInteger("responsible_user");
-            $table->unsignedBigInteger("status_id");
+            $table->unsignedBigInteger("store");
             $table->timestamps();
 
             $table->foreign("instrument_id")->references("id")->on("instruments")
             ->onDelete("restrict")->onUpdate("restrict");
             $table->foreign("responsible_user")->references("id")->on("users")->onDelete("restrict")
-            ->onUpdate("restrict");
-            $table->foreign("status_id")->references("id")->on("statuses")->onDelete("restrict")
             ->onUpdate("restrict");
         });
     }

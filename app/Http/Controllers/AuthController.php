@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Validator;
 use Symfony\Component\CssSelector\Node\FunctionNode;
+use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
@@ -43,6 +45,30 @@ class AuthController extends Controller
 
         return $this->response->__invoke(
             true, "You logged out successfully.", null, 200
+        );
+    }
+
+    public function changePassword(Request $request){
+        $validated = Validator::make($request->all(), [
+            "oldPassword" => "required",
+            "newPassword" => "required",
+            "confirmPassword" => "required|same:newPassword"
+        ]);
+
+        $user = $request->user();
+
+        if(!Hash::check($validated["oldPassword"], $user->password)){
+            return $this->response->__invoke(
+                true,
+                "Incorrect password.",
+                [], 403
+            );
+        }
+
+        // $user->password = 
+
+        return $this->response->__invoke(
+            true, "Password was changed.", []
         );
     }
 }

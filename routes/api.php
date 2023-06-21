@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\ExtensionRequestController;
+use App\Http\Controllers\ImparedInstrumentController;
 use App\Http\Controllers\InstrumentController;
 use App\Http\Controllers\InstrumentsRequestController;
 use App\Http\Controllers\StoreController;
@@ -30,6 +31,7 @@ Route::middleware('auth:sanctum')->group(function(){
     });
     Route::controller(AuthController::class)->group(function(){
         Route::post("logout", "logout");
+        Route::patch("change-password", "changePassword");
     });
     
     Route::controller(RoleController::class)->prefix("roles")->group(function(){
@@ -86,7 +88,7 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::controller(InstrumentsRequestController::class)->group(function(){
         Route::prefix("requests")->group(function(){
             Route::post("place", "store");
-            
+            Route::post("mark-impared/{instruments_req_id}", "markImpared");
             
             Route::get("records/{records}", "index");
             Route::put("update/{request_id}", "update");
@@ -106,5 +108,10 @@ Route::middleware('auth:sanctum')->group(function(){
         Route::get("store/{store_id}/records/{records}", "index");
         Route::patch("approve/{ext_id}", "approve");
         Route::delete("{ext_id}", "destroy");
+    });
+
+    //Impared instruments
+    Route::controller(ImparedInstrumentController::class)->prefix("impared")->group(function(){
+        Route::get("store/{store_id}/records/{records}", "index");
     });
 });

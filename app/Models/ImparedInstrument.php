@@ -8,4 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 class ImparedInstrument extends Model
 {
     use HasFactory;
+
+    protected $guarded = [
+        "id"
+    ];
 }
