@@ -29,7 +29,7 @@ class AuthController extends Controller
         $username = $request->username;
         $password = $request->password;
 
-        if (Auth::attempt(["user_id" => $username, "password" => $password,])) {
+        if (Auth::attempt(["username" => $username, "password" => $password,])) {
             return $this->handleSession($request);
         } else if (Auth::attempt(["email" => $username, "password" => $password,])) {
             return $this->handleSession($request);
