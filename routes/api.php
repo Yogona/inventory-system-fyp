@@ -95,6 +95,7 @@ Route::middleware('auth:sanctum')->group(function(){
             Route::put("update/{request_id}", "update");
             Route::patch("allocate/{request_id}", "allocate");
             Route::patch("deallocate/{request_id}", "deallocate");
+            Route::patch("sign/{request_id}", "signInstrumentReceipt");
             Route::delete("delete/{request_id}", "destroy");
         });
 

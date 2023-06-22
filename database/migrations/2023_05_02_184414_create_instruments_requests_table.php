@@ -17,6 +17,7 @@ return new class extends Migration
             $table->unsignedBigInteger("instrument_id");
             $table->unsignedInteger("quantity");
             $table->unsignedBigInteger("allocatee");
+            $table->unsignedBigInteger("allocatee_sign")->nullable();
             $table->unsignedBigInteger("status_id")->default(1);
             $table->unsignedBigInteger("store_id");
             $table->unsignedBigInteger("assignment_id");
