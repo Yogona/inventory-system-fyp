@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CounterController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\ExtensionRequestController;
 use App\Http\Controllers\ImparedInstrumentController;
@@ -114,4 +115,6 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::controller(ImparedInstrumentController::class)->prefix("impared")->group(function(){
         Route::get("store/{store_id}/records/{records}", "index");
     });
+
+    Route::get("statistics", [CounterController::class, "__invoke"]);
 });
