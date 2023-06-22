@@ -10,6 +10,7 @@ use App\Http\Controllers\InstrumentsRequestController;
 use App\Http\Controllers\StoreController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\ReportController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -118,4 +119,5 @@ Route::middleware('auth:sanctum')->group(function(){
     });
 
     Route::get("statistics", [CounterController::class, "__invoke"]);
+    Route::get("report", [ReportController::class, "__invoke"]);
 });
