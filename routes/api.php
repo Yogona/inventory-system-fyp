@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CounterController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\ExtensionRequestController;
 use App\Http\Controllers\ImparedInstrumentController;
@@ -9,6 +10,7 @@ use App\Http\Controllers\InstrumentsRequestController;
 use App\Http\Controllers\StoreController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\ReportController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -94,6 +96,7 @@ Route::middleware('auth:sanctum')->group(function(){
             Route::put("update/{request_id}", "update");
             Route::patch("allocate/{request_id}", "allocate");
             Route::patch("deallocate/{request_id}", "deallocate");
+            Route::patch("sign/{request_id}", "signInstrumentReceipt");
             Route::delete("delete/{request_id}", "destroy");
         });
 
@@ -114,4 +117,7 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::controller(ImparedInstrumentController::class)->prefix("impared")->group(function(){
         Route::get("store/{store_id}/records/{records}", "index");
     });
+
+    Route::get("statistics", [CounterController::class, "__invoke"]);
+    Route::get("report", [ReportController::class, "__invoke"]);
 });

@@ -66,6 +66,9 @@ class InstrumentsRequestController extends Controller
             $allocatee = User::find($req->allocatee);
             $req->allocatee = $allocatee;
 
+            $allocateeSign = User::find($req->allocatee_sign);
+            $req->allocatee_sign = $allocateeSign;
+
             $instrument = Instrument::find($req->instrument_id);
             $req->instrument_id = $instrument;
 
@@ -318,6 +321,20 @@ class InstrumentsRequestController extends Controller
             "$numOfImpared instruments marked as impared.",
             [],
             201
+        );
+    }
+
+    public function signInstrumentReceipt(Request $request, $requestId){
+        $user = $request->user();
+        $request = InstrumentsRequest::find($requestId);
+
+        $request->update(["allocatee_sign" => $user->id]);
+
+        return $this->response->__invoke(
+            true,
+            "Signed successfully.",
+            [],
+            200
         );
     }
 }

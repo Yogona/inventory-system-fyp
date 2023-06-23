@@ -16,6 +16,7 @@ class InstrumentsRequest extends Model
         "quantity", 
         "days", 
         "allocatee", 
+        "allocatee_sign",
         "store_id", 
         "deadline", 
         "assignment_id"
