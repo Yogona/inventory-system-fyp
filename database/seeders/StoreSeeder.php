@@ -18,7 +18,7 @@ class StoreSeeder extends Seeder
             "description"   => "Doing A.",
             "location"      => "Area A",
             "store_keeper"  => 3,
-            "department_id" => 1
+            // "department_id" => 1
         ]);
     }
 }
