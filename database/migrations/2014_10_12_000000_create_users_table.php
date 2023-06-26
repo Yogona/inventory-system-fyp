@@ -21,15 +21,15 @@ return new class extends Migration
             $table->string("phone", 15)->unique();
             $table->string('password');
             $table->unsignedBigInteger("role_id")->default(5);
-            $table->unsignedBigInteger("department_id")->nullable()->default(NULL);
+            // $table->unsignedBigInteger("department_id")->nullable()->default(NULL);
             $table->rememberToken();
             $table->softDeletes();
             $table->timestamps();
             
             $table->foreign("role_id")->references("id")->on("roles")->onDelete(null)
             ->onUpdate("restrict");
-            $table->foreign("department_id")->references("id")->on("departments")->onDelete(null)
-            ->onUpdate("restrict");
+            // $table->foreign("department_id")->references("id")->on("departments")->onDelete(null)
+            // ->onUpdate("restrict");
         });
     }
 

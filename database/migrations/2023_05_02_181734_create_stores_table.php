@@ -17,13 +17,13 @@ return new class extends Migration
             $table->text("description")->nullable();
             $table->string("location");
             $table->unsignedBigInteger("store_keeper")->unique()->nullable();
-            $table->unsignedBigInteger("department_id");
+            // $table->unsignedBigInteger("department_id");
             $table->timestamps();
 
             $table->foreign("store_keeper")->references("id")->on("users")->onDelete(null)
             ->onUpdate("restrict");
-            $table->foreign("department_id")->references("id")->on("departments")->onDelete(null)
-            ->onUpdate("restrict");
+            // $table->foreign("department_id")->references("id")->on("departments")->onDelete(null)
+            // ->onUpdate("restrict");
         });
     }
 

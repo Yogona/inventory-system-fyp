@@ -54,7 +54,7 @@ class UpdateStoreReq extends FormRequest
             "description"   => "nullable",
             "location"      => "required",
             // "store_keeper"  => "required|integer|gt:0|unique:stores",
-            "department_id" => "required|integer|gt:0"
+            // "department_id" => "required|integer|gt:0"
         ];
     }
 
