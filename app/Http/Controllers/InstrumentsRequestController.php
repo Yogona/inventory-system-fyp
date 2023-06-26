@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\CreateRequestsReq;
 use App\Http\Requests\ExtensionReq;
+use App\Mail\InstrumentsRequested;
 use App\Models\ExtensionRequest;
 use App\Models\InstrumentsRequest;
 use Illuminate\Database\QueryException;
@@ -16,6 +17,7 @@ use App\Models\Instrument;
 use App\Models\User;
 use App\Models\Status;
 use App\Models\Store;
+use Illuminate\Support\Facades\Mail;
 
 class InstrumentsRequestController extends Controller
 {
@@ -138,6 +140,11 @@ class InstrumentsRequestController extends Controller
                 ]);
             }
         }
+
+        $allocatee  = User::find($request->allocatee);
+        $store      = Store::find($request->store_id);
+
+        Mail::to($allocatee->email)->queue(new InstrumentsRequested($allocatee, $store));
 
         return $this->response->__invoke(
             true, "Instruments request has been placed.", null, 201
