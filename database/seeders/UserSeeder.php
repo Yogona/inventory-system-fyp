@@ -57,12 +57,12 @@ class UserSeeder extends Seeder
             "role_id"       => 4,
         ]);
         User::create([
-            "first_name"    => "Gasper",
-            "last_name"     => "Gidson",
-            "gender"        => "M",
-            "phone"         => "0700112237",
-            "email"         => "gasper@localhost",
-            "username"      => "gasper",
+            "first_name"    => "PERUTH",
+            "last_name"     => "JULIUS",
+            "gender"        => "F",
+            "phone"         => "255623706249",
+            "email"         => "juliusperuth16@gmail.com",
+            "username"      => "juliusperuth16@gmail.com",
             "password"      => Hash::make("1234"),
             "role_id"       => 5,
         ]);
