@@ -3,10 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\ExtensionRequest;
+use App\Models\User;
+use App\Models\Store;
 use Illuminate\Http\Request;
 use App\Http\Requests\ExtensionReq;
 use App\Http\Controllers\ResponseController;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\Extend;
 
 class ExtensionRequestController extends Controller
 {
@@ -113,6 +117,16 @@ class ExtensionRequestController extends Controller
         }
 
         $ext = ExtensionRequest::find($extId);
+
+        if(!$ext){
+            return $this->response->__invoke(
+                false,
+                "Extension request not found.",
+                null,
+                404
+            );
+        }
+
         $extraDays = $ext->extra_days;
 
         $assignment = $ext->assignment()->first();
@@ -126,10 +140,13 @@ class ExtensionRequestController extends Controller
         }
 
         $ext->delete();
-        $allocatee=User::find($assignment->assignee);
 
+        $allocatee  = User::find($assignment->assignee);
+        $store      = Store::find($assignment->store_id);
 
-        Mail::to($allocatee->email)->queue(new Extend($allocatee, $store));
+        if($allocatee){
+            Mail::to($allocatee->email)->queue(new Extend($allocatee, $store));
+        }
 
         return $this->response->__invoke(
             true,

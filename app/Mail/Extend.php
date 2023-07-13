@@ -13,12 +13,15 @@ class Extend extends Mailable
 {
     use Queueable, SerializesModels;
 
+    public $allocatee, $store;
+
     /**
      * Create a new message instance.
      */
-    public function __construct()
+    public function __construct($allocatee, $store)
     {
-        //
+        $this->allocatee = $allocatee;
+        $this->store = $store;
     }
 
     /**
