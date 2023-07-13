@@ -17,6 +17,7 @@ return new class extends Migration
             $table->unsignedBigInteger("store_id");
             $table->unsignedBigInteger("requester");
             $table->unsignedInteger("extra_days");
+            $table->boolean("approved")->default(false);
             $table->timestamps();
 
             $table->foreign("assignment")->references("id")->on("instruments_requests")

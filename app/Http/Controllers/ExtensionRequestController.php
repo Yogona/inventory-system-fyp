@@ -126,6 +126,14 @@ class ExtensionRequestController extends Controller
                 404
             );
         }
+        else if($ext->approved){
+            return $this->response->__invoke(
+                false,
+                "Can't re approve this request.",
+                null,
+                403
+            );
+        }
 
         $extraDays = $ext->extra_days;
 
@@ -139,7 +147,10 @@ class ExtensionRequestController extends Controller
             $req->save();
         }
 
-        $ext->delete();
+        // $ext->delete();
+        $ext->update([
+            "approved" => true
+        ]);
 
         $allocatee  = User::find($assignment->assignee);
         $store      = Store::find($assignment->store_id);
