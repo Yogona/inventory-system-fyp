@@ -126,6 +126,10 @@ class ExtensionRequestController extends Controller
         }
 
         $ext->delete();
+        $allocatee=User::find($assignment->assignee);
+
+
+        Mail::to($allocatee->email)->queue(new Extend($allocatee, $store));
 
         return $this->response->__invoke(
             true,
