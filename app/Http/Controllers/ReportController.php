@@ -17,7 +17,7 @@ class ReportController extends Controller
         $instruments = Instrument::all();
         $imparedInstruments = ImparedInstrument::all();
         foreach($imparedInstruments as $imparedInstrument){
-            $instrument = Instrument::find($imparedInstrument->id);
+            $instrument = Instrument::find($imparedInstrument->instrument_id);
             $imparedInstrument->instrument_id = $instrument;
 
             $store = Store::find($imparedInstrument->store);
